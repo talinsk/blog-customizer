@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Text } from 'src/ui/text';
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
@@ -11,37 +11,45 @@ import {
 	fontColors,
 	backgroundColors,
 	contentWidthArr,
-	OptionType,
+	defaultArticleState,
+	ArticleStateType,
 } from 'src/constants/articleProps';
 import styles from './ArticleParamsForm.module.scss';
 
-type ArticleParamsFormState = {
-	isOpen: boolean;
-	selectedFontOption: OptionType;
-	selectedFontSizeOption: OptionType;
-	selectedFontColorsOption: OptionType;
-	selectedBackgroundColorsOption: OptionType;
-	selectedContentWidthArrOption: OptionType;
+type ArticleParamsFormProps = {
+	onApply: (pars: ArticleStateType) => void;
 };
 
-export const ArticleParamsForm = () => {
+type ArticleParamsFormState = ArticleStateType & {
+	isOpen: boolean;
+};
+
+export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 	const [state, setState] = useState<ArticleParamsFormState>({
-		isOpen: true,
-		selectedFontOption: fontFamilyOptions[0],
-		selectedFontSizeOption: fontSizeOptions[0],
-		selectedFontColorsOption: fontColors[0],
-		selectedBackgroundColorsOption: backgroundColors[0],
-		selectedContentWidthArrOption: contentWidthArr[0],
+		isOpen: false,
+		...defaultArticleState,
 	});
 
 	const {
 		isOpen,
-		selectedFontOption,
-		selectedFontSizeOption,
-		selectedFontColorsOption,
-		selectedBackgroundColorsOption,
-		selectedContentWidthArrOption,
+		fontSizeOption,
+		backgroundColor,
+		contentWidth,
+		fontColor,
+		fontFamilyOption,
 	} = state;
+
+	const handleApply = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		const pars: ArticleStateType = { ...state };
+		onApply(pars);
+		handleReset();
+	};
+
+	const handleReset = () => {
+		setState({ ...defaultArticleState, isOpen: false });
+	};
 
 	return (
 		<>
@@ -51,51 +59,57 @@ export const ArticleParamsForm = () => {
 					setState({ ...state, isOpen: !isOpen });
 				}}
 			/>
-			<aside className={isOpen ? styles.container_open : styles.container}>
-				<form className={styles.form}>
+			<aside
+				className={`${styles.container} ${
+					isOpen ? styles.container_open : ''
+				}`}>
+				<form
+					className={styles.form}
+					onSubmit={handleApply}
+					onReset={handleReset}>
 					<Text as='h1' size={31} weight={800} uppercase dynamicLite>
 						Задайте параметры
 					</Text>
 					<Select
 						options={fontFamilyOptions}
-						selected={selectedFontOption}
+						selected={fontFamilyOption}
 						title='Шрифт'
 						onChange={(opt) => {
-							setState({ ...state, selectedFontOption: opt });
+							setState({ ...state, fontFamilyOption: opt });
 						}}
 					/>
 					<RadioGroup
 						name='font-size'
 						title='Размер шрифта'
 						options={fontSizeOptions}
-						selected={selectedFontSizeOption}
+						selected={fontSizeOption}
 						onChange={(opt) => {
-							setState({ ...state, selectedFontSizeOption: opt });
+							setState({ ...state, fontSizeOption: opt });
 						}}
 					/>
 					<Select
 						options={fontColors}
-						selected={selectedFontColorsOption}
+						selected={fontColor}
 						title='Цвет шрифта'
 						onChange={(opt) => {
-							setState({ ...state, selectedFontColorsOption: opt });
+							setState({ ...state, fontColor: opt });
 						}}
 					/>
 					<Separator />
 					<Select
 						options={backgroundColors}
-						selected={selectedBackgroundColorsOption}
+						selected={backgroundColor}
 						title='Цвет фона'
 						onChange={(opt) => {
-							setState({ ...state, selectedBackgroundColorsOption: opt });
+							setState({ ...state, backgroundColor: opt });
 						}}
 					/>
 					<Select
 						options={contentWidthArr}
-						selected={selectedContentWidthArrOption}
+						selected={contentWidth}
 						title='Ширина контента'
 						onChange={(opt) => {
-							setState({ ...state, selectedContentWidthArrOption: opt });
+							setState({ ...state, contentWidth: opt });
 						}}
 					/>
 
