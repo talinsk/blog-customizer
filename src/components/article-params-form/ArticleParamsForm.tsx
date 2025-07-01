@@ -42,13 +42,14 @@ export const ArticleParamsForm = ({
 	const handleApply = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const pars: ArticleStateType = { ...state };
-		onApply(pars);
-		handleReset();
+		onApply({ ...state });
+		onFormToggle();
 	};
 
 	const handleReset = () => {
-		setState({ ...defaultArticleState });
+		const newState = { ...defaultArticleState };
+		setState(newState);
+		onApply(newState);
 		onFormToggle();
 	};
 
