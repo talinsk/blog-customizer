@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { FormEvent, useState } from 'react';
 import { Text } from 'src/ui/text';
 import { ArrowButton } from 'src/ui/arrow-button';
@@ -17,21 +18,21 @@ import {
 import styles from './ArticleParamsForm.module.scss';
 
 type ArticleParamsFormProps = {
-	isOpen: boolean;
-	onFormToggle: () => void;
 	onApply: (pars: ArticleStateType) => void;
 };
 
-export const ArticleParamsForm = ({
-	isOpen,
-	onApply,
-	onFormToggle,
-}: ArticleParamsFormProps) => {
-	const [state, setState] = useState<ArticleStateType>({
+type ArticleParamsFormState = ArticleStateType & {
+	isOpen: boolean;
+};
+
+export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
+	const [state, setState] = useState<ArticleParamsFormState>({
 		...defaultArticleState,
+		isOpen: false,
 	});
 
 	const {
+		isOpen,
 		fontSizeOption,
 		backgroundColor,
 		contentWidth,
@@ -42,15 +43,16 @@ export const ArticleParamsForm = ({
 	const handleApply = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		onApply({ ...state });
-		onFormToggle();
+		commitState({ ...state, isOpen: false });
 	};
 
 	const handleReset = () => {
-		const newState = { ...defaultArticleState };
+		commitState({ ...defaultArticleState, isOpen: false });
+	};
+
+	const commitState = (newState: ArticleParamsFormState) => {
 		setState(newState);
 		onApply(newState);
-		onFormToggle();
 	};
 
 	return (
@@ -58,13 +60,13 @@ export const ArticleParamsForm = ({
 			<ArrowButton
 				isOpen={isOpen}
 				onClick={() => {
-					onFormToggle();
+					setState({ ...state, isOpen: !isOpen });
 				}}
 			/>
 			<aside
-				className={`${styles.container} ${
-					isOpen ? styles.container_open : ''
-				}`}>
+				className={clsx(styles.container, {
+					[styles.container_open]: isOpen,
+				})}>
 				<form
 					className={styles.form}
 					onSubmit={handleApply}

@@ -1,6 +1,5 @@
 import { createRoot } from 'react-dom/client';
 import { StrictMode, CSSProperties, useState } from 'react';
-import clsx from 'clsx';
 
 import { Article } from './components/article/Article';
 import { ArticleParamsForm } from './components/article-params-form/ArticleParamsForm';
@@ -20,23 +19,13 @@ const App = () => {
 		...defaultArticleState,
 	});
 
-	const [isParamsFormOpen, setIsParamsFormOpen] = useState<boolean>(false);
-
 	const handleParamsApplied = (pars: ArticleStateType) => {
 		setState(pars);
 	};
 
-	const handleFormToggle = () => {
-		setIsParamsFormOpen(!isParamsFormOpen);
-	};
-
-	const handleArticleClick = () => {
-		setIsParamsFormOpen(false);
-	};
-
 	return (
 		<main
-			className={clsx(styles.main)}
+			className={styles.main}
 			style={
 				{
 					'--font-family': state.fontFamilyOption.value,
@@ -46,12 +35,8 @@ const App = () => {
 					'--bg-color': state.backgroundColor.value,
 				} as CSSProperties
 			}>
-			<ArticleParamsForm
-				onApply={handleParamsApplied}
-				isOpen={isParamsFormOpen}
-				onFormToggle={handleFormToggle}
-			/>
-			<Article onClick={handleArticleClick} />
+			<ArticleParamsForm onApply={handleParamsApplied} />
+			<Article />
 		</main>
 	);
 };
