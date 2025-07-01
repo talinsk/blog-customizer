@@ -17,21 +17,21 @@ import {
 import styles from './ArticleParamsForm.module.scss';
 
 type ArticleParamsFormProps = {
+	isOpen: boolean;
+	onFormToggle: () => void;
 	onApply: (pars: ArticleStateType) => void;
 };
 
-type ArticleParamsFormState = ArticleStateType & {
-	isOpen: boolean;
-};
-
-export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
-	const [state, setState] = useState<ArticleParamsFormState>({
-		isOpen: false,
+export const ArticleParamsForm = ({
+	isOpen,
+	onApply,
+	onFormToggle,
+}: ArticleParamsFormProps) => {
+	const [state, setState] = useState<ArticleStateType>({
 		...defaultArticleState,
 	});
 
 	const {
-		isOpen,
 		fontSizeOption,
 		backgroundColor,
 		contentWidth,
@@ -48,7 +48,8 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 	};
 
 	const handleReset = () => {
-		setState({ ...defaultArticleState, isOpen: false });
+		setState({ ...defaultArticleState });
+		onFormToggle();
 	};
 
 	return (
@@ -56,7 +57,7 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 			<ArrowButton
 				isOpen={isOpen}
 				onClick={() => {
-					setState({ ...state, isOpen: !isOpen });
+					onFormToggle();
 				}}
 			/>
 			<aside

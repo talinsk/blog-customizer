@@ -20,8 +20,18 @@ const App = () => {
 		...defaultArticleState,
 	});
 
+	const [isParamsFormOpen, setIsParamsFormOpen] = useState<boolean>(false);
+
 	const handleParamsApplied = (pars: ArticleStateType) => {
 		setState(pars);
+	};
+
+	const handleFormToggle = () => {
+		setIsParamsFormOpen(!isParamsFormOpen);
+	};
+
+	const handleArticleClick = () => {
+		setIsParamsFormOpen(false);
 	};
 
 	return (
@@ -36,8 +46,12 @@ const App = () => {
 					'--bg-color': state.backgroundColor.value,
 				} as CSSProperties
 			}>
-			<ArticleParamsForm onApply={handleParamsApplied} />
-			<Article />
+			<ArticleParamsForm
+				onApply={handleParamsApplied}
+				isOpen={isParamsFormOpen}
+				onFormToggle={handleFormToggle}
+			/>
+			<Article onClick={handleArticleClick} />
 		</main>
 	);
 };
