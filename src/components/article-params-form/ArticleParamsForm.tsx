@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Text } from 'src/ui/text';
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
@@ -31,6 +31,8 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 		isOpen: false,
 	});
 
+	const rootRef = useRef<HTMLBaseElement>(null);
+
 	const {
 		isOpen,
 		fontSizeOption,
@@ -39,6 +41,23 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 		fontColor,
 		fontFamilyOption,
 	} = state;
+
+	useEffect(() => {
+		const handleClick = (event: MouseEvent) => {
+			const { target } = event;
+			if (target instanceof Node && !rootRef.current?.contains(target)) {
+				if (isOpen) {
+					toggleForm();
+				}
+			}
+		};
+
+		window.addEventListener('mousedown', handleClick);
+
+		return () => {
+			window.removeEventListener('mousedown', handleClick);
+		};
+	}, [isOpen]);
 
 	const handleApply = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -55,15 +74,20 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 		onApply(newState);
 	};
 
+	const toggleForm = () => {
+		setState({ ...state, isOpen: !isOpen });
+	};
+
 	return (
 		<>
 			<ArrowButton
 				isOpen={isOpen}
 				onClick={() => {
-					setState({ ...state, isOpen: !isOpen });
+					toggleForm();
 				}}
 			/>
 			<aside
+				ref={rootRef}
 				className={clsx(styles.container, {
 					[styles.container_open]: isOpen,
 				})}>
